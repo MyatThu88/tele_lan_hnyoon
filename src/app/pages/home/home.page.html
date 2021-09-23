@@ -1,0 +1,43 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button class="menu" shape="round" color="medium">
+        <ion-icon name="menu"></ion-icon>
+        <ion-ripple-effect></ion-ripple-effect>
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button class="noti" shape="round" color="medium">
+        <ion-icon name="notifications"></ion-icon>
+        <ion-ripple-effect></ion-ripple-effect>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-content fullscreen="true">
+    <div class="heading">
+      <h1>Find Ur</h1>
+      <h1>Movies With Us</h1>
+    </div>
+    <div class="search">
+      <ion-input placeholder="Enter movie's title.."> </ion-input>
+      <ion-icon name="search-outline"></ion-icon>
+    </div>
+    <div class="popular">
+      <h3>Popular</h3>
+      <ion-slides class="popular-slider" [options]=popularSlideOpts>
+        <ion-slide *ngFor="let movie of movieList" (click)="movieDetail(movie.id)">
+          <img class="slider-image" [src]="movie.img">
+          <div class="info">
+            <p>{{movie.name}}</p>
+            <ion-buttons slot="end">
+              <ion-button shape="round" fill="clear">
+                <ion-icon slot="icon-only" name="play"></ion-icon>
+                <ion-ripple-effect></ion-ripple-effect>
+              </ion-button>
+            </ion-buttons>
+          </div>
+        </ion-slide>
+      </ion-slides>
+    </div>
+  </ion-content>
+</ion-header>
