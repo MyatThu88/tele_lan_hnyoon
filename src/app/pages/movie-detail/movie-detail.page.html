@@ -5,7 +5,6 @@
 
     </ion-buttons>
 
-    <ion-text>{{currentMovie.title}}</ion-text>
     <ion-buttons slot="end">
       <ion-button>
         <ion-icon slot="icon-only" name="heart"></ion-icon>
@@ -18,10 +17,111 @@
   <div class="background">
     <img [src]="currentMovie.img" alt="">
   </div>
-  <div class="blur"></div>
   <div class="backdrop-separator1"></div>
   <div class="backdrop-separator2"></div>
   <div class="poster">
     <img class="poster" [src]="currentMovie.img">
   </div>
+  <ion-card class="movie-info">
+    <div class="movie-title">
+      <ion-icon name="stop-circle" color="primary"></ion-icon>
+      <h2>{{currentMovie.name | titlecase}} </h2>
+    </div>
+
+    <div class="movie-info-row">
+      <div class="movie-left">
+        <p>{{currentMovie.genre | titlecase}}</p>
+        <p>{{currentMovie.releasedYear}} | Sub: <span>{{currentMovie.sub[0] | titlecase}}</span></p>
+      </div>
+      <ion-button mode="ios" [href]="currentMovie.telegram" color="primary">
+        <ion-icon color="light" name="play"></ion-icon><span> Watch Now</span>
+      </ion-button>
+    </div>
+    <div class="movie-info-row-2">
+      <ion-button mode="ios" fill="outline" class="trailer">
+        <ion-icon color="primary" name="logo-youtube"></ion-icon> Trailer
+        <ion-ripple-effect></ion-ripple-effect>
+      </ion-button>
+      <ion-button mode="ios" fill="outline" class="trailer">
+        <ion-icon color="primary" name="bookmarks"></ion-icon> WatchList
+        <ion-ripple-effect></ion-ripple-effect>
+      </ion-button>
+      <ion-button mode="ios" fill="outline" class="trailer">
+        <ion-icon color="primary" name="layers"></ion-icon> Collection
+        <ion-ripple-effect></ion-ripple-effect>
+      </ion-button>
+    </div>
+  </ion-card>
+  <ion-card class="description-info">
+    <ion-card-content>
+      <h2 class="description">Description</h2>
+      <p class="des-text">{{currentMovie.description | slice:0:maxLength}} <a *ngIf="maxLength<=110"
+          (click)="showAll(currentMovie.description.length)">...see more</a></p>
+    </ion-card-content>
+  </ion-card>
+  <ion-card class="episode-list-info" *ngIf="episodes">
+    <ion-card-content>
+      <h2 class="episode">Episode</h2>
+      <a class="ep-container" (click)="handleClick(currentMovie.episodes.english[ep.episode_number-1])"
+        *ngFor="let ep of episodes" (click)="handleClick(ep.episode_number)">
+        <img [src]="'https://image.tmdb.org/t/p/w500'+ep.still_path" alt="">
+        <div class="ep-info">
+          <p class="title">{{ep.episode_number}}. {{ep.name}}</p>
+          <p class="overview">{{ep.overview |slice:0:60}}...</p>
+        </div>
+      </a>
+    </ion-card-content>
+  </ion-card>
+  <ion-card class="episode-rating-info" *ngIf="this.currentMovie.type=='tv' && this.episodes">
+    <h2 class="ep-rating">Episode Rating</h2>
+    <chart #chart [type]="type" [data]="data" [options]="options" style="height: 100%"></chart>
+  </ion-card>
+  <ion-card class="cast-info" *ngIf="tmdbInfo">
+    <ion-card-content>
+      <h2 class="cast">Cast</h2>
+      <ion-slides [options]="castSlideOpts">
+        <ion-slide *ngFor="let cast of tmdbInfo.credits.cast" (click)="onPersonDetail(cast.id)">
+          <div class="avatar">
+            <img [src]="'https://image.tmdb.org/t/p/w500'+cast.profile_path">
+            <p class="cast-name">{{cast.name}}</p>
+          </div>
+        </ion-slide>
+      </ion-slides>
+    </ion-card-content>
+  </ion-card>
+  <!-- skeleton -->
+  <ion-card class="episode-rating-info" *ngIf="this.currentMovie.type=='tv' && !this.episodes">
+    <h2 class="ep-rating">Episode Rating</h2>
+    <div class="rating-skeleton">
+      <ion-skeleton-text animated style="width: 20px; height:100px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 20px; height:120px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 20px; height:130px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 20px; height:150px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 20px; height:60px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 20px; height:80px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 20px; height:110px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 20px; height:90px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 20px; height:50px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 20px; height:103px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 20px; height:80px;"></ion-skeleton-text>
+    </div>
+
+
+  </ion-card>
+  <ion-card *ngIf="!tmdbInfo" class="cast-info">
+    <ion-card-content>
+      <h2 class="cast">Cast</h2>
+      <ion-slides [options]="castSlideOpts">
+        <ion-slide *ngFor="let cast of [1,2,3,4,5,6,7]">
+          <div class="movie">
+            <ion-skeleton-text animated style="width: 50px;height:50px;border-radius: 50%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 40px; height:5px;margin: 0 auto;margin-bottom: 4px;">
+            </ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 40px;height:5px;margin: 0 auto;margin-bottom: 4px;">
+            </ion-skeleton-text>
+          </div>
+        </ion-slide>
+      </ion-slides>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

@@ -8,6 +8,8 @@ import { MovieDetailPageRoutingModule } from './movie-detail-routing.module';
 
 import { SharedDirectivesModule } from '../../directives/shared-directives.module';
 import { MovieDetailPage } from './movie-detail.page';
+import { SharedComponentsModule } from 'src/app/components/shared-components.module';
+import { ChartModule } from 'angular2-chartjs';
 
 @NgModule({
   imports: [
@@ -16,6 +18,8 @@ import { MovieDetailPage } from './movie-detail.page';
     IonicModule,
     MovieDetailPageRoutingModule,
     SharedDirectivesModule,
+    SharedComponentsModule,
+    ChartModule,
   ],
   declarations: [MovieDetailPage],
 })

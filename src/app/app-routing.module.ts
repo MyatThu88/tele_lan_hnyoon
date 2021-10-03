@@ -14,6 +14,13 @@ const routes: Routes = [
         (m) => m.MovieDetailPageModule
       ),
   },
+  {
+    path: 'person-detail/:id',
+    loadChildren: () =>
+      import('./pages/person-detail/person-detail.module').then(
+        (m) => m.PersonDetailPageModule
+      ),
+  },
 ];
 @NgModule({
   imports: [

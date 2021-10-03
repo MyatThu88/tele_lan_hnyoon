@@ -1,0 +1,113 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar #toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button text="" mode="ios"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true" scrollEvents="true" color="light">
+  <div class="background">
+
+    <ion-skeleton-text *ngIf="!person" animated style="width:100% ;height: 500px;">
+    </ion-skeleton-text>
+    <img *ngIf="person && person.profile_path" [src]="'https://image.tmdb.org/t/p/w500' + person.profile_path">
+  </div>
+  <div class="person" *ngIf="person">
+    <h3>{{person.name}}</h3>
+    <circle-progress class="popularity-circle" [percent]="person.popularity" [radius]="40" [outerStrokeWidth]="4"
+      [innerStrokeWidth]="2" [outerStrokeColor]="'#78C000'" [titleFontSize]="'12'" [innerStrokeColor]="'#C7E596'"
+      [animation]="true" [animationDuration]="300" subtitle="Popularity">
+    </circle-progress>
+    <div class="person-detail-info">
+      <div class="known-info">
+        <div>
+          <p class="title">Carrier</p>
+          <p class="sub-info">{{person.known_for_department? person.known_for_department : 'Not Described'}}</p>
+        </div>
+        <div>
+          <p class="title">Also Known As</p>
+          <p class="sub-info">{{person.also_known_as[0]? person.also_known_as : 'Not Described'}}</p>
+        </div>
+      </div>
+      <p class="title">Gender </p>
+      <p class="sub-info">{{person.gender == 1? 'Female':'Male'}}</p>
+      <p class="title">Birthday</p>
+      <p class="sub-info">{{person.birthday ? person.birthday : 'Not Described'}}</p>
+      <p class="title">Place Of Birth</p>
+      <p class="sub-info">{{person.place_of_birth ? person.place_of_birth : 'Not Described'}}</p>
+      <br>
+      <h4 class="title">Biograohy</h4>
+      <p class="sub-info">{{person.biography.length>1 ? person.biography : 'Not Described'}}</p>
+      <br>
+      <h4 class="title">Movies and Tv Shows</h4>
+      <ion-slides [options]="MovieSlideOpts">
+        <ion-slide *ngFor="let cast of person.credits.cast">
+          <div class="movie">
+            <img
+              [src]="cast.backdrop_path?'https://image.tmdb.org/t/p/w500'+cast.backdrop_path:'assets/icon/noimage.jpeg'">
+            <p class="cast-name">{{cast.title}}</p>
+            <p class="date">{{cast.release_date |slice:0:4}}</p>
+          </div>
+        </ion-slide>
+      </ion-slides>
+    </div>
+  </div>
+
+  <div class="person skeleton" *ngIf="!person">
+    <h3>
+      <ion-skeleton-text animated style="width: 50%;height:10px;margin: 0 auto;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 50%;height:10px;margin: 0 auto;margin-top: 5px;"></ion-skeleton-text>
+    </h3>
+    <div class="person-detail-info">
+      <div class="known-info">
+        <div>
+          <p class="title">Carrier</p>
+          <ion-skeleton-text animated style="width:130px;margin-bottom: 5px;"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width:100px;margin-bottom: 5px;"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width:130px;margin-bottom: 5px;"></ion-skeleton-text>
+          <br>
+        </div>
+        <div>
+          <p class="title">Also Known As</p>
+          <ion-skeleton-text animated style="width:130px;margin-bottom: 5px;"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width:100px;margin-bottom: 5px;"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width:130px;margin-bottom: 5px;"></ion-skeleton-text>
+          <br>
+        </div>
+      </div>
+      <p class="title">Gender </p>
+      <ion-skeleton-text animated style="width:130px;margin-bottom: 5px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width:100px;margin-bottom: 5px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width:130px;margin-bottom: 5px;"></ion-skeleton-text>
+      <br>
+      <p class="title">Birthday</p>
+      <ion-skeleton-text animated style="width:130px;margin-bottom: 5px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width:100px;margin-bottom: 5px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width:130px;margin-bottom: 5px;"></ion-skeleton-text>
+      <br>
+      <p class="title">Place Of Birth</p>
+      <ion-skeleton-text animated style="width:130px;margin-bottom: 5px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width:100px;margin-bottom: 5px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width:130px;margin-bottom: 5px;"></ion-skeleton-text>
+      <br>
+      <br>
+      <h4 class="title">Biograohy</h4>
+      <ion-skeleton-text animated style="width: 80%;margin-bottom: 3px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 70%;margin-bottom: 3px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 80%;margin-bottom: 3px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 70%;margin-bottom: 3px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 80%;margin-bottom: 3px;"></ion-skeleton-text>
+      <br>
+      <h4 class="title">Movies and Tv Shows</h4>
+      <ion-slides [options]="MovieSlideOpts">
+        <ion-slide *ngFor="let cast of [1,2,3,4,5,6]">
+          <div class="movie">
+            <ion-skeleton-text animated style="width: 100px;height:100px;border-radius: 50%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 60px;margin: 0 auto;margin-bottom: 10px;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 60px;margin: 0 auto;margin-bottom: 10px;"></ion-skeleton-text>
+          </div>
+        </ion-slide>
+      </ion-slides>
+    </div>
+  </div>
+</ion-content>
