@@ -21,6 +21,13 @@ const routes: Routes = [
         (m) => m.PersonDetailPageModule
       ),
   },
+  {
+    path: 'genre-detail/:id',
+    loadChildren: () =>
+      import('./pages/genre-detail/genre-detail.module').then(
+        (m) => m.GenreDetailPageModule
+      ),
+  },
 ];
 @NgModule({
   imports: [

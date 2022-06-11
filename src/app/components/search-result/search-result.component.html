@@ -1,0 +1,18 @@
+<div class="popular">
+  <h3 class="side-border">Result</h3>
+  <div class="search-results" *ngIf="this.searchResult.length>0">
+    <div *ngFor="let result of this.searchResult">
+      <div class="result-container" (click)="movieDetail(result._id)">
+        <img [src]="result.img" alt="search-result">
+        <div class="res-info">
+          <p class="title">{{result.name}}</p>
+          <span class="genre" *ngFor="let genre of result.genre;let i=index;"
+            [style.backgroundColor]="selectColor(genre)">{{genre}}</span>
+          <p class="desc"> {{result?.description.length>150? (result.description | slice:0:150 )+'...' :
+            result.description}}</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

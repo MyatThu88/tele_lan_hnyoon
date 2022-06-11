@@ -14,15 +14,15 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" scrollEvents="true" color="light">
-  <div class="background">
+  <div class="background" *ngIf="currentMovie">
     <img [src]="currentMovie.img" alt="">
   </div>
   <div class="backdrop-separator1"></div>
   <div class="backdrop-separator2"></div>
-  <div class="poster">
+  <div class="poster" *ngIf="currentMovie">
     <img class="poster" [src]="currentMovie.img">
   </div>
-  <ion-card class="movie-info">
+  <ion-card class="movie-info" *ngIf="currentMovie">
     <div class="movie-title">
       <ion-icon name="stop-circle" color="primary"></ion-icon>
       <h2>{{currentMovie.name | titlecase}} </h2>
@@ -30,8 +30,8 @@
 
     <div class="movie-info-row">
       <div class="movie-left">
-        <p>{{currentMovie.genre | titlecase}}</p>
-        <p>{{currentMovie.releasedYear}} | Sub: <span>{{currentMovie.sub[0] | titlecase}}</span></p>
+        <p> <span>{{currentMovie.genre.join(', ') |titlecase}}</span></p>
+        <p>{{currentMovie.releasedYear}} | Sub: <span>{{currentMovie.sub.join(', ') |titlecase}}</span></p>
       </div>
       <ion-button mode="ios" [href]="currentMovie.telegram" color="primary">
         <ion-icon color="light" name="play"></ion-icon><span> Watch Now</span>
@@ -52,27 +52,55 @@
       </ion-button>
     </div>
   </ion-card>
-  <ion-card class="description-info">
+  <ion-card class="description-info" *ngIf="currentMovie">
     <ion-card-content>
       <h2 class="description">Description</h2>
       <p class="des-text">{{currentMovie.description | slice:0:maxLength}} <a *ngIf="maxLength<=110"
           (click)="showAll(currentMovie.description.length)">...see more</a></p>
     </ion-card-content>
   </ion-card>
-  <ion-card class="episode-list-info" *ngIf="episodes">
+  <ion-card class="episode-list-info" *ngIf="episodes && currentMovie">
     <ion-card-content>
-      <h2 class="episode">Episode</h2>
-      <a class="ep-container" (click)="handleClick(currentMovie.episodes.english[ep.episode_number-1])"
-        *ngFor="let ep of episodes" (click)="handleClick(ep.episode_number)">
-        <img [src]="'https://image.tmdb.org/t/p/w500'+ep.still_path" alt="">
-        <div class="ep-info">
-          <p class="title">{{ep.episode_number}}. {{ep.name}}</p>
-          <p class="overview">{{ep.overview |slice:0:60}}...</p>
+      <div class="episode-list-header">
+        <h2 class="episode">Episode</h2>
+        <div *ngIf="currentMovie.sub.length===2" class="toggle-container">
+          <ion-toggle color="success" (ionChange)="handleToggle()" mode="ios"></ion-toggle>
         </div>
-      </a>
+      </div>
+      <div class="preview-available"
+        *ngIf="episodes[episodes.length-1]?.overview.length >1 || episodes[episodes.length-1]?.still_path">
+        <a class="ep-container" [ngClass]="{'recentEp':(ep.episode_number===lastWatchedEP)}"
+          *ngFor="let ep of episodes;let index=index"
+          (click)="episodeClickHandler(ep.episode_number,currentMovie.mdbId,$event,index)"
+          [href]="currentMovie.episodes[0][subtitle][index]">
+          <img [hidden]="!isImgLoaded" [src]="'https://image.tmdb.org/t/p/w500'+ep.still_path"
+            (load)="imageLoadHandler()">
+          <ion-skeleton-text *ngIf="!isImgLoaded" animated style="width: 100px; height:70px;margin-right: 10px;">
+          </ion-skeleton-text>
+          <div class="ep-info">
+            <p class="title">{{ep.episode_number}}. {{ep.name}}</p>
+            <p class="overview">{{ep.overview!==""?(ep.overview |slice:0:60 )+"...": "There Is No Episode Detail Yet.
+              Sorry For Inconvinence Sir"}}
+            </p>
+          </div>
+        </a>
+      </div>
+      <div class="no-preview"
+        *ngIf="episodes[episodes.length-1]?.overview.length ==0 && episodes[episodes.length-1]?.still_path ==null">
+        <ion-slides [options]="{slidesPerView: 4}">
+          <ion-slide *ngFor="let ep of episodes;let i=index">
+            <div class="episode-border" [ngClass]="{'ep-watched':(ep.episode_number===lastWatchedEP)}"
+              (click)="episodeClickHandler(ep.episode_number,currentMovie.mdbId,$event,i)">
+              <a [href]="currentMovie.episodes[0][subtitle][i]" class="no-preview-eplink">{{i+1}}</a>
+
+            </div>
+          </ion-slide>
+        </ion-slides>
+      </div>
+
     </ion-card-content>
   </ion-card>
-  <ion-card class="episode-rating-info" *ngIf="this.currentMovie.type=='tv' && this.episodes">
+  <ion-card class="episode-rating-info" *ngIf="currentMovie && currentMovie.type=='tv' && this.episodes">
     <h2 class="ep-rating">Episode Rating</h2>
     <chart #chart [type]="type" [data]="data" [options]="options" style="height: 100%"></chart>
   </ion-card>
@@ -82,7 +110,8 @@
       <ion-slides [options]="castSlideOpts">
         <ion-slide *ngFor="let cast of tmdbInfo.credits.cast" (click)="onPersonDetail(cast.id)">
           <div class="avatar">
-            <img [src]="'https://image.tmdb.org/t/p/w500'+cast.profile_path">
+            <img
+              [src]="cast.profile_path? ('https://image.tmdb.org/t/p/w500'+cast.profile_path ):'assets/icon/notFound.jpg'">
             <p class="cast-name">{{cast.name}}</p>
           </div>
         </ion-slide>
@@ -90,7 +119,68 @@
     </ion-card-content>
   </ion-card>
   <!-- skeleton -->
-  <ion-card class="episode-rating-info" *ngIf="this.currentMovie.type=='tv' && !this.episodes">
+
+  <!-- Background -->
+  <div *ngIf="!currentMovie" class="background-skeleton">
+    <div class="background">
+      <ion-skeleton-text animated style="width: 100%; height:600px;"></ion-skeleton-text>
+    </div>
+    <div class="backdrop-separator1"></div>
+    <div class="backdrop-separator2"></div>
+    <div class="poster">
+      <ion-skeleton-text animated style="width: 170px; height:230px;"></ion-skeleton-text>
+    </div>
+  </div>
+
+  <!-- movie info -->
+  <ion-card class="movie-info" *ngIf="!currentMovie">
+    <div class="movie-title">
+      <ion-skeleton-text animated style="width: 150px; height:13px;"></ion-skeleton-text>
+    </div>
+    <div class="movie-info-row">
+      <div class="movie-left">
+        <ion-skeleton-text animated style="width: 80px; height:13px;"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 150px; height:13px;"></ion-skeleton-text>
+      </div>
+      <ion-skeleton-text animated style="width: 80px; height:30px;border-radius: 30px;"></ion-skeleton-text>
+    </div>
+  </ion-card>
+
+  <!-- description -->
+  <ion-card class="description-info" *ngIf="!currentMovie">
+    <ion-card-content>
+      <h2 class="description">Description</h2>
+      <ion-skeleton-text animated style="width: 95%; height:13px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 75%; height:13px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 95%; height:13px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 75%; height:13px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 95%; height:13px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 75%; height:13px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 95%; height:13px;"></ion-skeleton-text>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- episode list -->
+
+  <ion-card class="episode-list-info" *ngIf="!currentMovie">
+    <ion-card-content>
+      <h2 class="episode">Episode</h2>
+      <div class="episode-skeleton" *ngFor="let item of [1,2,3,4,5]">
+        <ion-skeleton-text animated style="width: 100px; height:70px;margin-right: 10px;">
+        </ion-skeleton-text>
+        <div class="ep-info">
+          <ion-skeleton-text animated style="width: 100px; height:10px;"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 200px; height:10px;"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 170px; height:10px;"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 200px; height:10px;"></ion-skeleton-text>
+        </div>
+      </div>
+
+    </ion-card-content>
+  </ion-card>
+
+  <!-- episode rating -->
+  <ion-card class="episode-rating-info" *ngIf=" this.episodes.length === 0">
     <h2 class="ep-rating">Episode Rating</h2>
     <div class="rating-skeleton">
       <ion-skeleton-text animated style="width: 20px; height:100px;"></ion-skeleton-text>

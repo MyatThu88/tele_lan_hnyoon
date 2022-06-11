@@ -10,7 +10,9 @@ import { HomePage } from './home.page';
 import { SharedDirectivesModule } from '../../directives/shared-directives.module';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { SharedComponentsModule } from '../../components/shared-components.module';
 
+import { ReactiveFormsModule } from '@angular/forms';
 @NgModule({
   imports: [
     CommonModule,
@@ -20,6 +22,8 @@ import { MatButtonModule } from '@angular/material/button';
     SharedDirectivesModule,
     MatIconModule,
     MatButtonModule,
+    SharedComponentsModule,
+    ReactiveFormsModule,
   ],
   declarations: [HomePage],
 })

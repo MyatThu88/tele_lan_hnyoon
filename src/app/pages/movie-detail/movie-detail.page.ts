@@ -1,61 +1,79 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Movie } from 'src/assets/mockDb/db';
-import { TmdbService } from 'src/app/services/tmdb.service';
+import { TmdbService } from '../../services/tmdb.service';
+import { MovieService } from '../../services/movie.service';
+import { IronStorageService } from '../../services/localstorage.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 @Component({
   selector: 'app-movie-detail',
   templateUrl: './movie-detail.page.html',
   styleUrls: ['./movie-detail.page.scss'],
 })
 export class MovieDetailPage implements OnInit {
-  movieList = Movie;
   currentMovie;
   maxLength: number = 110;
   episodes: any[] = [];
+  isImgLoaded = false;
+  selectedSeason = 1;
   tmdbInfo;
+  lastWatchedEP: number;
   castSlideOpts = {
     slidesPerView: 4.5,
     spaceBetween: 10,
     shadow: true,
   };
+  toggleSubtitleEng = false;
   type;
   data;
   options;
+  subtitle = 'burmese';
   constructor(
     private actvRoute: ActivatedRoute,
     private router: Router,
-    private tmdb: TmdbService
+    private tmdb: TmdbService,
+    private movieService: MovieService,
+    private ionStorage: IronStorageService,
+    private _snackBar: MatSnackBar
   ) {}
 
   ngOnInit() {
     const movieId = this.actvRoute.snapshot.params['id'];
     this.getMovieDetail(movieId);
-    console.log('aa', this.episodes);
+    console.log('single movie detail', this.episodes);
     this.showChart(this.episodes);
+    // this.movieService.getMovies().subscribe((movie: any) => {
+    //   console.log(movie.data);
+    // });
   }
 
+  ngAfterViewInit() {}
+
   async getMovieDetail(movieId) {
-    this.currentMovie = this.movieList[movieId - 1]; //mock data
-    await this.tmdb
+    await this.movieService.getMovieById(movieId).then((resp: any) => {
+      console.log(' mongo data resp', resp);
+      this.currentMovie = resp.data;
+      this.subtitle = this.currentMovie.sub[0].toLowerCase();
+      console.log(this.subtitle);
+
+      this.selectedSeason = resp.data.selectedSeason
+        ? resp.data.selectedSeason
+        : 1; //only for kamen rider series's same mdbID problem
+    });
+    this.fetchLocalClickHistory(this.currentMovie.mdbId);
+    this.tmdb
       .getMovieDetail(this.currentMovie.mdbId, this.currentMovie.type)
       .subscribe((data: any) => {
         console.log('real tmdb data', data);
         this.tmdbInfo = data;
         if (this.currentMovie.type == 'tv') {
-          this.tmdb
-            .getEpisodeDetail(
-              this.currentMovie.mdbId,
-              1,
-              data.seasons[0].episode_count
-            )
-            .subscribe((episode: any) => {
-              this.episodes.push(episode);
-
-              if (this.episodes.length == data.seasons[0].episode_count) {
-                console.log(episode);
-                this.showChart(this.episodes);
-              }
-            });
+          this.fetchEpisode(data);
         }
       });
   }
@@ -68,14 +86,52 @@ export class MovieDetailPage implements OnInit {
     console.log(epNo);
   }
 
+  fetchLocalClickHistory(mdbId) {
+    console.log(mdbId);
+    console.log('mdb ID from local storage', localStorage.getItem(mdbId));
+    this.lastWatchedEP = parseInt(localStorage.getItem(mdbId));
+    // this.ionStorage.getLastWatchedep(mdbId).then((ep) => {
+    //   console.log('ion storage value '), ep;
+    //   this.lastWatchedEP = parseInt(ep);
+    // });
+  }
+  imageLoadHandler() {
+    this.isImgLoaded = true;
+  }
+
+  fetchEpisode(data) {
+    this.tmdb
+      .getEpisodeDetail(
+        this.currentMovie.mdbId,
+        this.selectedSeason,
+        data.seasons[this.selectedSeason - 1].episode_count,
+        data.last_episode_to_air
+      )
+      .subscribe((episode: any) => {
+        this.episodes.push(episode);
+        this.selectedSeason = this.currentMovie.selectedSeason //condition checked for kamen rider irregular api problem
+          ? this.currentMovie.selectedSeason + 1 //this.currentMovie.selectedSeason condition meant only for kamen rider series
+          : this.selectedSeason;
+        console.log('tmdb episode list', this.episodes);
+
+        if (
+          this.episodes.length ==
+            data.seasons[this.selectedSeason - 1].episode_count ||
+          this.episodes.length == data.last_episode_to_air?.episode_number //conditon checked for episode rating hcart not showing in ongoing series
+        ) {
+          console.log('aa testing uhear me haha');
+
+          this.showChart(this.episodes);
+        }
+      });
+  }
+
   onPersonDetail(id) {
     this.router.navigate(['person-detail', id]);
   }
   showChart(episodes) {
     let rating = [];
     let numberOfep = [];
-    let popOutCount;
-    let epList = [...episodes];
     let chartType;
     let backgroundColor = [
       'rgba(255, 99, 132, 0.2)',
@@ -96,27 +152,19 @@ export class MovieDetailPage implements OnInit {
     if (
       this.tmdbInfo &&
       this.tmdbInfo.next_episode_to_air &&
-      this.tmdbInfo.next_episode_to_air.season_number == '1'
+      this.tmdbInfo.next_episode_to_air.season_number == this.selectedSeason
     ) {
-      popOutCount =
-        this.tmdbInfo.seasons[0].episode_count -
-        this.tmdbInfo.last_episode_to_air.episode_number;
-      epList.splice(
-        this.tmdbInfo.last_episode_to_air.episode_number,
-        popOutCount
-      );
       chartType = 'horizontal';
-      console.log(episodes);
     }
 
-    for (const key in epList) {
+    for (const key in episodes) {
       numberOfep.push(parseInt(key) + 1);
       console.log(key);
 
       rating.push(
-        epList[key].id % 10 < 4
-          ? (epList[key].id % 10) + 3
-          : epList[key].id % 10
+        episodes[key].id % 10 < 4
+          ? (episodes[key].id % 10) + 3
+          : episodes[key].id % 10
       );
       backgroundColor.push(backgroundColor[key]);
       borderColor.push(borderColor[key]);
@@ -185,6 +233,30 @@ export class MovieDetailPage implements OnInit {
           ],
         },
       };
+    }
+  }
+  episodeClickHandler(ep, mdbId, event, i) {
+    if (!this.currentMovie.episodes[0][this.subtitle][i]) {
+      console.log('link not available');
+      event.preventDefault();
+      this._snackBar.open('Link is not available right now', 'OK', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        panelClass: ['green-snackbar'],
+      });
+      return;
+    }
+    console.log('clicked episode', ep, mdbId);
+    localStorage.setItem(mdbId, ep);
+    // this.ionStorage.setLastWatchedep(mdbId, ep);
+    this.lastWatchedEP = ep;
+  }
+  handleToggle() {
+    this.toggleSubtitleEng = !this.toggleSubtitleEng;
+    if (this.toggleSubtitleEng === true) {
+      this.subtitle = 'english';
+    } else {
+      this.subtitle = 'burmese';
     }
   }
 }

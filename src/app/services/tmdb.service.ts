@@ -17,13 +17,21 @@ export class TmdbService {
 
   getMovieDetail(id: number, type: string) {
     const append = '&append_to_response=credits';
+    console.log(
+      'movie detail url',
+      `${this.baseUrl}/${type}/${id}${this.getParams()}${append}`
+    );
     return this.http.get(
       `${this.baseUrl}/${type}/${id}${this.getParams()}${append}`
     );
   }
 
-  getEpisodeDetail(id, season: number, totalEpisode: number) {
+  getEpisodeDetail(id, season: number, totalEpisode: number, lastEpInfo: any) {
     const append = '&append_to_response=credits';
+    totalEpisode =
+      lastEpInfo.season_number === season
+        ? lastEpInfo.episode_number
+        : totalEpisode;
     const episodeObs = range(1, totalEpisode);
     return episodeObs.pipe(
       concatMap((data) =>

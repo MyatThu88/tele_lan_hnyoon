@@ -1,0 +1,110 @@
+.drawer {
+  position: absolute;
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 4px 16px;
+  width: 100%;
+  border-top-left-radius: 40px;
+  border-top-right-radius: 40px;
+  bottom: -93vh;
+  height: 90vh;
+  z-index: 30;
+  background: #fff;
+  overflow: scroll;
+}
+.drawer-pull {
+  background: #ccc;
+  height: 4px;
+  width: 60px;
+  border-radius: 2px;
+}
+.header {
+  position: relative;
+  top: 0;
+  width: 100%;
+}
+.title {
+  margin-bottom: 2px;
+  h1 {
+    text-align: center;
+    margin: 0 0 10px 0;
+    font-size: 27px;
+    font-weight: 300;
+    letter-spacing: 0.8px;
+  }
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin: 20px 6px 0 6px;
+  .genreItem {
+    box-sizing: border-box;
+    text-align: center;
+    width: 33.33%;
+    height: 120px;
+    justify-self: center;
+    padding: 20px 0px 0px 0px;
+    border-left: 4px solid #fff;
+    border-right: 4px solid #fff;
+    border-radius: 14px;
+    margin-bottom: 12px;
+    img {
+      height: 26px;
+    }
+    p {
+      color: #8080808f;
+      padding-top: 35px;
+    }
+    ion-icon {
+      font-size: 25px;
+    }
+  }
+  .g1 {
+    background: #fef8dd;
+    color: #ffd100;
+  }
+  .g2 {
+    background: #ffe7c76e;
+    color: #ff9100;
+  }
+  .g3 {
+    background: #acddde78;
+    color: #00b3b7;
+  }
+  .g4 {
+    background: #ffdede61;
+    color: #ffaeae;
+  }
+  .g5 {
+    background: #38ffe359;
+    color: #00dfc0;
+  }
+  .g6 {
+    background: #f0a7fd70;
+    color: #e552fff0;
+  }
+  .g7 {
+    background: #37ff7d57;
+    color: #17e760;
+  }
+  .g8 {
+    background: #f9f4626b;
+    color: #c7c121;
+  }
+  .g9 {
+    background: #6a98ff63;
+    color: #477df5f0;
+  }
+  .g10 {
+    background: #97e7ef7a;
+    color: #11def3fa;
+  }
+  .g11 {
+    background: #ff906f59;
+    color: #fd6538;
+  }
+  .g12 {
+    background: #89f75c78;
+    color: #49cd13f5;
+  }
+}

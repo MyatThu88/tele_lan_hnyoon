@@ -31,6 +31,8 @@
       </div>
       <p class="title">Gender </p>
       <p class="sub-info">{{person.gender == 1? 'Female':'Male'}}</p>
+      <p class="title">Age </p>
+      <p class="sub-info">{{person.birthday? getAge(person.birthday):'Not Described'}}</p>
       <p class="title">Birthday</p>
       <p class="sub-info">{{person.birthday ? person.birthday : 'Not Described'}}</p>
       <p class="title">Place Of Birth</p>
@@ -44,7 +46,7 @@
         <ion-slide *ngFor="let cast of person.credits.cast">
           <div class="movie">
             <img
-              [src]="cast.backdrop_path?'https://image.tmdb.org/t/p/w500'+cast.backdrop_path:'assets/icon/noimage.jpeg'">
+              [src]="cast.backdrop_path?'https://image.tmdb.org/t/p/w500'+cast.backdrop_path:'assets/icon/notFound.jpg'">
             <p class="cast-name">{{cast.title}}</p>
             <p class="date">{{cast.release_date |slice:0:4}}</p>
           </div>
@@ -76,6 +78,11 @@
         </div>
       </div>
       <p class="title">Gender </p>
+      <ion-skeleton-text animated style="width:130px;margin-bottom: 5px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width:100px;margin-bottom: 5px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width:130px;margin-bottom: 5px;"></ion-skeleton-text>
+      <br>
+      <p class="title">Age</p>
       <ion-skeleton-text animated style="width:130px;margin-bottom: 5px;"></ion-skeleton-text>
       <ion-skeleton-text animated style="width:100px;margin-bottom: 5px;"></ion-skeleton-text>
       <ion-skeleton-text animated style="width:130px;margin-bottom: 5px;"></ion-skeleton-text>

@@ -1,0 +1,21 @@
+<div class="drawer" #drawer>
+  <div class="ion-text-center header">
+    <ion-button fill="clear" expand="full">
+      <div class="drawer-pull"></div>
+    </ion-button>
+  </div>
+  <div class="title">
+    <h1>Hello There</h1>
+    <h1>General Kenobi</h1>
+  </div>
+  <div class="genre" #body>
+    <div class="row">
+      <div *ngFor="let genre of movieGenreList;let i=index" [class]="genre.cssClass+' genreItem'"
+        (click)="handleRoute(i)">
+        <ion-icon *ngIf="genre.isIcon" [name]="genre.iconName"></ion-icon>
+        <img *ngIf="!genre.isIcon" [src]="genre.imgPath">
+        <p>{{genre.name}}</p>
+      </div>
+    </div>
+  </div>
+</div>

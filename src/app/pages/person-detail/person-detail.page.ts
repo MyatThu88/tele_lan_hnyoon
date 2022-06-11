@@ -31,6 +31,11 @@ export class PersonDetailPage implements OnInit {
     console.log('aa');
   }
 
+  getAge(birthday) {
+    const currYear = new Date().getFullYear();
+    const bdYear = parseInt(birthday.slice(0, 4));
+    return currYear - bdYear;
+  }
   private getPersonDetail(id: number) {
     this.tmdb.getPersonDetail(id).subscribe((res) => {
       this.person = res;

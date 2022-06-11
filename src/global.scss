@@ -31,3 +31,8 @@
 * {
   font-family: "Bodoni Moda" !important;
 }
+.green-snackbar {
+  .mat-simple-snackbar-action {
+    color: #28d063;
+  }
+}

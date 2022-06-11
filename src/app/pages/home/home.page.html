@@ -6,6 +6,13 @@
         <ion-ripple-effect></ion-ripple-effect>
       </ion-button>
     </ion-buttons>
+    <div class="search-box">
+      <ion-input [formControl]="searchForm" (keyup.enter)="onSearchEnter()" (ionChange)="handleSearchInput()"
+        placeholder="Enter movie's title..">
+      </ion-input>
+      <ion-icon #dropdownBtn (click)="onSearchCancel()" [name]="isSearchActive?'close-outline':'filter-outline'">
+      </ion-icon>
+    </div>
     <ion-buttons slot="end">
       <ion-button class="noti" shape="round" color="medium">
         <ion-icon name="notifications"></ion-icon>
@@ -13,31 +20,87 @@
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
-  <ion-content fullscreen="true">
+</ion-header>
+<ion-content fullscreen="true">
+
+  <div class="search-not-active" *ngIf="!isSearchActive;else searchActive">
     <div class="heading">
-      <h1>Find Ur</h1>
-      <h1>Movies With Us</h1>
+      <ion-slides [options]="{ slidesPerView: 1.2}">
+        <ion-slide *ngFor="let movie of popularMovieList">
+          <img [src]="movie.backgroundImg" alt="">
+          <p>{{movie.name}}</p>
+        </ion-slide>
+      </ion-slides>
     </div>
-    <div class="search">
-      <ion-input placeholder="Enter movie's title.."> </ion-input>
-      <ion-icon name="search-outline"></ion-icon>
-    </div>
-    <div class="popular">
-      <h3>Popular</h3>
+
+    <div class="korean">
+      <h3 class="side-border">Korean</h3>
       <ion-slides class="popular-slider" [options]=popularSlideOpts>
-        <ion-slide *ngFor="let movie of movieList" (click)="movieDetail(movie.id)">
+        <ion-slide *ngFor="let movie of koreanMovieList" (click)="movieDetail(movie._id)">
           <img class="slider-image" [src]="movie.img">
           <div class="info">
-            <p>{{movie.name}}</p>
-            <ion-buttons slot="end">
-              <ion-button shape="round" fill="clear">
-                <ion-icon slot="icon-only" name="play"></ion-icon>
-                <ion-ripple-effect></ion-ripple-effect>
-              </ion-button>
-            </ion-buttons>
+            <p>{{(movie?.name.length>19)? (movie?.name | slice:0:19)+'...' :(movie?.name)}}</p>
+            <p class="current-ep-info" *ngIf="movie">{{'S1 : '+calculateCurrentEpisode(movie.episodes[0])}}</p>
           </div>
         </ion-slide>
       </ion-slides>
     </div>
-  </ion-content>
-</ion-header>
+    <div class="anime">
+      <h3 class="side-border">Anime</h3>
+      <ion-slides class="popular-slider" [options]=popularSlideOpts>
+        <ion-slide *ngFor="let movie of animeMovieList" (click)="movieDetail(movie._id)">
+          <img class="slider-image" [src]="movie.img">
+          <div class="info">
+            <p>{{(movie?.name.length>19)? (movie?.name | slice:0:19)+'...' :(movie?.name)}}</p>
+            <p class="current-ep-info">{{'S1 : '+calculateCurrentEpisode(movie.episodes[0])}}</p>
+          </div>
+        </ion-slide>
+      </ion-slides>
+    </div>
+    <div class="western">
+      <h3 class="side-border">Western</h3>
+      <ion-slides class="popular-slider" [options]=popularSlideOpts>
+        <ion-slide *ngFor="let movie of koreanMovieList" (click)="movieDetail(movie._id)">
+          <img class="slider-image" [src]="movie.img">
+          <div class="info">
+            <p>{{(movie?.name.length>19)? (movie?.name | slice:0:19)+'...' :(movie?.name)}}</p>
+            <p class="current-ep-info" *ngIf="movie">{{'S1 : '+calculateCurrentEpisode(movie.episodes[0])}}</p>
+          </div>
+        </ion-slide>
+      </ion-slides>
+    </div>
+    <div class="japanese">
+      <h3 class="side-border">Japanese</h3>
+      <ion-slides class="popular-slider" [options]=popularSlideOpts>
+        <ion-slide *ngFor="let movie of japaneseMovieList" (click)="movieDetail(movie._id)">
+          <img class="slider-image" [src]="movie.img">
+          <div class="info">
+            <p>{{(movie?.name.length>19)? (movie?.name | slice:0:19)+'...' :(movie?.name)}}</p>
+            <p class="current-ep-info">{{'S1 : '+calculateCurrentEpisode(movie.episodes[0])}}</p>
+          </div>
+        </ion-slide>
+      </ion-slides>
+    </div>
+    <div class="chinese">
+      <h3 class="side-border">Chinese</h3>
+      <ion-slides class="popular-slider" [options]=popularSlideOpts>
+        <ion-slide *ngFor="let movie of chineseMovieList" (click)="movieDetail(movie._id)">
+          <img class="slider-image" [src]="movie.img">
+          <div class="info">
+            <p>{{(movie?.name.length>19)? (movie?.name | slice:0:19)+'...' :(movie?.name)}}</p>
+            <p class="current-ep-info">{{'S1 : '+calculateCurrentEpisode(movie.episodes[0])}}</p>
+          </div>
+
+        </ion-slide>
+      </ion-slides>
+    </div>
+  </div>
+  <ng-template #searchActive>
+    <app-search-result (onLoadmoreComplete)="onComplete($event)"></app-search-result>
+    <ion-infinite-scroll threshold="100px" (ionInfinite)="loadData($event)">
+      <ion-infinite-scroll-content loadingSpinner="bubbles">
+      </ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  </ng-template>
+
+</ion-content>

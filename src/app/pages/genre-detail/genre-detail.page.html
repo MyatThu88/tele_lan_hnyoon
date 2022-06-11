@@ -1,0 +1,27 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar #toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button text="" mode="ios"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true" scrollEvents="true">
+  <div class="spotlight" [style]="{background:genre.color}">
+    <div class="genre-avatar" [style]="{background:genre.color}">
+      <ion-icon *ngIf="genre.isIcon" [name]="genre.iconName" [style]="{color:genre.color}"></ion-icon>
+      <img *ngIf="!genre.isIcon" [src]="genre.imgPath">
+    </div>
+  </div>
+  <div class="genre-body">
+    <h1 class="genre-title">
+      {{genre.name | titlecase}}
+    </h1>
+    <div class="movieList">
+      <div class="movie-container" *ngFor="let movie of movieList">
+        <img [src]="movie.img" alt="">
+        <p class="movie-title">{{movie.title}}</p>
+      </div>
+    </div>
+  </div>
+
+</ion-content>
